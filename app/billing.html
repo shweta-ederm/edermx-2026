@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billing - eDermX 2026</title>
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ederm.css">
+<style>
+/* ============================================================
+   Billing — page-scoped redesign (revenue command center)
+   ============================================================ */
+
+/* --- AR hero band --- */
+.bill-hero {
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 1.25fr .9fr; gap: var(--sp-8);
+  padding: var(--sp-6) var(--sp-8);
+  border-radius: var(--r-xl); color: #fff;
+  background: linear-gradient(135deg, var(--brand-900) 0%, var(--brand-700) 52%, var(--brand-600) 100%);
+  box-shadow: var(--shadow-brand);
+  margin-bottom: var(--sp-6);
+}
+.bill-hero::before {
+  content: ""; position: absolute; top: -90px; right: -50px; width: 320px; height: 320px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+  pointer-events: none;
+}
+.bill-hero::after {
+  content: ""; position: absolute; bottom: -120px; left: 30%; width: 280px; height: 280px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(0,170,247,.28), transparent 70%);
+  pointer-events: none;
+}
+.bill-hero__main { position: relative; z-index: 1; }
+.bill-hero__eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--brand-100);
+}
+.bill-hero__eyebrow svg { width: 15px; height: 15px; }
+.bill-hero__value { font-size: 46px; font-weight: 800; letter-spacing: -.025em; line-height: 1; margin: 12px 0 6px; }
+.bill-hero__sub { color: var(--brand-100); font-size: var(--fs-sm); }
+.bill-hero__sub b { color: #fff; }
+
+/* AR aging meter */
+.aging { margin-top: var(--sp-6); max-width: 460px; }
+.aging__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: var(--fs-xs); color: var(--brand-100); font-weight: 600; }
+.aging__bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.16); }
+.aging__seg { height: 100%; }
+.aging__legend { display: flex; flex-wrap: wrap; gap: 8px var(--sp-5); margin-top: var(--sp-3); }
+.aging__item { display: flex; align-items: center; gap: 7px; font-size: var(--fs-xs); color: var(--brand-100); }
+.aging__dot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+
+/* hero KPI chips */
+.bill-hero__kpis { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--sp-3); align-self: center; }
+.kpi-chip {
+  display: flex; align-items: center; gap: var(--sp-3);
+  background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--r-lg); padding: var(--sp-3) var(--sp-4);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.kpi-chip__icon { width: 38px; height: 38px; border-radius: var(--r-md); display: grid; place-items: center; background: rgba(255,255,255,.16); color: #fff; flex: none; }
+.kpi-chip__icon svg { width: 18px; height: 18px; }
+.kpi-chip__label { font-size: var(--fs-xs); color: var(--brand-100); font-weight: 600; }
+.kpi-chip__value { font-size: var(--fs-xl); font-weight: 800; letter-spacing: -.01em; line-height: 1.1; }
+.kpi-chip__meta { font-size: var(--fs-xs); color: var(--brand-200); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.kpi-chip__meta svg { width: 12px; height: 12px; }
+.kpi-chip .pos { color: #7ff0c0; }
+
+/* --- main / rail layout --- */
+.bill-cols { display: grid; grid-template-columns: 1.55fr 1fr; gap: var(--sp-5); align-items: start; }
+
+/* card header with count */
+.bill-cardhead { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--border); }
+.bill-cardhead .accent-bar { width: 4px; height: 20px; border-radius: var(--r-pill); background: var(--grad-brand); }
+.bill-cardhead h2 { font-size: var(--fs-lg); font-weight: 700; }
+.bill-cardhead .spacer { flex: 1; }
+
+/* --- triage list (Needs attention) --- */
+.triage__row {
+  --sev: var(--ink-400);
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--border);
+  color: inherit; transition: background var(--transition);
+}
+.triage__row:last-child { border-bottom: none; }
+.triage__row:hover { background: var(--bg-subtle); }
+.triage__row.is-danger { --sev: var(--danger-600); }
+.triage__row.is-warn   { --sev: var(--warning-600); }
+.triage__row.is-info   { --sev: var(--brand-600); }
+.triage__sev { width: 4px; align-self: stretch; margin: 6px 0; border-radius: 999px; background: var(--sev); flex: none; }
+.triage__icon { width: 40px; height: 40px; border-radius: var(--r-md); display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--sev) 14%, #fff); color: var(--sev); }
+.triage__icon svg { width: 19px; height: 19px; }
+.triage__txt { flex: 1; min-width: 0; }
+.triage__name { font-weight: 600; color: var(--ink-900); }
+.triage__desc { font-size: var(--fs-xs); color: var(--ink-500); }
+.triage__count { font-size: var(--fs-2xl); font-weight: 800; color: var(--sev); font-variant-numeric: tabular-nums; }
+.triage__go { width: 18px; height: 18px; color: var(--ink-300); transition: color var(--transition), transform var(--transition); }
+.triage__row:hover .triage__go { color: var(--sev); transform: translateX(3px); }
+
+/* --- pipeline (daily work queues) --- */
+.pipeline { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; padding: var(--sp-4); }
+.pipe-step {
+  flex: 1 1 140px; position: relative; color: inherit;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: var(--sp-4); border-radius: var(--r-lg);
+  transition: background var(--transition), transform var(--transition);
+}
+.pipe-step:hover { background: var(--brand-50); transform: translateY(-2px); }
+.pipe-step__top { display: flex; align-items: center; gap: 8px; }
+.pipe-step__n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand-100); color: var(--brand-700); font-size: var(--fs-xs); font-weight: 800; display: grid; place-items: center; flex: none; }
+.pipe-step:hover .pipe-step__n { background: var(--grad-brand); color: #fff; }
+.pipe-step__label { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-600); }
+.pipe-step__value { font-size: var(--fs-3xl); font-weight: 800; color: var(--ink-900); line-height: 1; letter-spacing: -.02em; }
+.pipe-step__hint { font-size: var(--fs-xs); color: var(--ink-400); }
+.pipe-arrow { display: grid; place-items: center; color: var(--ink-300); flex: none; align-self: center; padding: 0 2px; }
+.pipe-arrow svg { width: 20px; height: 20px; }
+
+/* --- tools rail (inspectors / payments) --- */
+.tool-row {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4); border-radius: var(--r-lg);
+  border: 1px solid var(--border); background: #fff; box-shadow: var(--shadow-xs);
+  color: inherit; transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.tool-row:hover { transform: translateX(3px); box-shadow: var(--shadow-sm); border-color: var(--brand-200); }
+.tool-row__icon { width: 40px; height: 40px; border-radius: var(--r-md); display: grid; place-items: center; flex: none; background: var(--brand-50); color: var(--brand-700); }
+.tool-row__icon svg { width: 19px; height: 19px; }
+.tool-row__icon.is-info { background: var(--info-50); color: var(--info-700); }
+.tool-row__txt { flex: 1; min-width: 0; }
+.tool-row__name { font-weight: 600; color: var(--ink-900); }
+.tool-row__desc { font-size: var(--fs-xs); color: var(--ink-500); }
+.tool-row__go { width: 18px; height: 18px; color: var(--ink-300); transition: color var(--transition), transform var(--transition); }
+.tool-row:hover .tool-row__go { color: var(--brand-600); transform: translateX(3px); }
+
+.rail-group { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+@media (max-width: 1100px) {
+  .bill-hero { grid-template-columns: 1fr; gap: var(--sp-5); }
+  .bill-cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .bill-hero { padding: var(--sp-5); }
+  .bill-hero__value { font-size: 38px; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></symbol>
+  <symbol id="i-schedule" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></symbol>
+  <symbol id="i-patients" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M21 20a5 5 0 0 0-4-4.9"/></symbol>
+  <symbol id="i-billing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-6"/></symbol>
+  <symbol id="i-erx" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M14 3v5h5"/><path d="M8.5 12h3a2 2 0 0 1 0 4h-3v-4zm0 4l3.5 3.5"/></symbol>
+  <symbol id="i-results" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v6.5L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 9.5V3"/><path d="M8 3h8M8.5 14h7"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-reports" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 15a1.6 1.6 0 0 0-1.5-1H1a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 3 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 9 5a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 15 5a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 21 9v.1"/></symbol>
+  <symbol id="i-mips" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/></symbol>
+  <symbol id="i-inventory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></symbol>
+  <symbol id="i-switch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h13a4 4 0 0 1 4 4"/><path d="M17 20l4-4-4-4"/><path d="M21 16H8a4 4 0 0 1-4-4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 9v5M12 17.5v.5"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l6 6v14H6z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-billing-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 9l5-5 5 5M12 4v12"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4a2 2 0 0 1 2-2h13v18H6a2 2 0 0 0-2 2z"/><path d="M4 19.5V4"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-7"/><path d="M17 8h4v4"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+</svg>
+
+<div class="app">
+  <input type="checkbox" id="navToggle">
+  <aside class="sidebar">
+    <div class="sidebar__brand"><img src="assets/logo-ederm.png" alt="eDerm"></div>
+    <div class="sidebar__user">
+      <span class="avatar avatar-lg">SS</span>
+      <span class="sidebar__user-name">Shweta Singh</span>
+      <span class="sidebar__user-role">Super Admin</span>
+      <a class="sidebar__practice">Universal Dermatology <svg style="width:13px;height:13px"><use href="#i-switch"/></svg></a>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="nav-item"><svg><use href="#i-dashboard"/></svg> Dashboard</a>
+      <a href="schedule.html" class="nav-item"><svg><use href="#i-schedule"/></svg> Schedule</a>
+      <a href="patients.html" class="nav-item"><svg><use href="#i-patients"/></svg> Patients</a>
+      <a href="billing.html" class="nav-item is-active"><svg><use href="#i-billing"/></svg> Billing</a>
+      <a href="tasks.html" class="nav-item"><svg><use href="#i-tasks"/></svg> Tasks <span class="badge badge-count badge-danger">5</span></a>
+      <a href="erx.html" class="nav-item"><svg><use href="#i-erx"/></svg> ePrescribing</a>
+      <a href="results.html" class="nav-item"><svg><use href="#i-results"/></svg> Results <span class="badge badge-count badge-danger">2</span></a>
+      <a href="documents.html" class="nav-item"><svg><use href="#i-documents"/></svg> Documents</a>
+      <a href="reports.html" class="nav-item"><svg><use href="#i-reports"/></svg> Reports</a>
+      <a href="settings.html" class="nav-item"><svg><use href="#i-settings"/></svg> Settings</a>
+      <a href="mips.html" class="nav-item"><svg><use href="#i-mips"/></svg> MIPS Dashboard</a>
+      <a href="inventory.html" class="nav-item"><svg><use href="#i-inventory"/></svg> Inventory</a>
+      <div class="nav-section-label">Resources</div>
+      <a href="design-system.html" class="nav-item"><svg><use href="#i-settings"/></svg> Design System</a>
+    </nav>
+  </aside>
+  <label for="navToggle" class="scrim"></label>
+
+  <header class="topbar">
+    <label for="navToggle" class="iconbtn menu-toggle"><svg><use href="#i-menu"/></svg></label>
+    <div class="topbar__search">
+      <div class="search"><svg><use href="#i-search"/></svg><input class="input" placeholder="Search patient by name, MRN, phone, or SSN"></div>
+    </div>
+    <div class="topbar__actions">
+      <span class="topbar__time hide-mobile">12:49 PM</span>
+      <button class="iconbtn"><svg><use href="#i-bell"/></svg><span class="dot"></span></button>
+      <button class="iconbtn"><svg><use href="#i-power"/></svg></button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <h1 class="page-title">Billing</h1>
+          <p class="page-subtitle">Streamlined workflows for collecting revenue</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-outline"><svg><use href="#i-billing-up"/></svg> Post payment</button>
+          <button class="btn btn-primary"><svg><use href="#i-check"/></svg> Create deposit</button>
+        </div>
+      </div>
+
+      <div class="tabs mb-5">
+        <a class="tab is-active">Dashboard</a>
+        <a class="tab">Queues</a>
+        <a class="tab">Inspectors</a>
+        <a class="tab">Payments</a>
+      </div>
+
+      <!-- ============ AR HERO ============ -->
+      <section class="bill-hero">
+        <div class="bill-hero__main">
+          <span class="bill-hero__eyebrow"><svg><use href="#i-billing"/></svg> Total Open AR</span>
+          <div class="bill-hero__value">$48.2k</div>
+          <div class="bill-hero__sub">Across <b>132 claims</b> &middot; <b>$6.1k</b> over 90 days needs action</div>
+
+          <div class="aging">
+            <div class="aging__head"><span>AR aging</span><span>132 claims</span></div>
+            <div class="aging__bar">
+              <span class="aging__seg" style="width:55%;background:#22c55e"></span>
+              <span class="aging__seg" style="width:25%;background:#eab308"></span>
+              <span class="aging__seg" style="width:12%;background:#f97316"></span>
+              <span class="aging__seg" style="width:8%;background:#ef4444"></span>
+            </div>
+            <div class="aging__legend">
+              <span class="aging__item"><span class="aging__dot" style="background:#22c55e"></span> 0–30 days &middot; $26.5k</span>
+              <span class="aging__item"><span class="aging__dot" style="background:#eab308"></span> 31–60 &middot; $12.1k</span>
+              <span class="aging__item"><span class="aging__dot" style="background:#f97316"></span> 61–90 &middot; $5.8k</span>
+              <span class="aging__item"><span class="aging__dot" style="background:#ef4444"></span> 90+ &middot; $3.8k</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bill-hero__kpis">
+          <div class="kpi-chip">
+            <span class="kpi-chip__icon"><svg><use href="#i-billing-up"/></svg></span>
+            <div><div class="kpi-chip__label">Collected this month</div><div class="kpi-chip__value">$214k</div><div class="kpi-chip__meta pos"><svg><use href="#i-trend"/></svg> 8% vs last month</div></div>
+          </div>
+          <div class="kpi-chip">
+            <span class="kpi-chip__icon"><svg><use href="#i-target"/></svg></span>
+            <div><div class="kpi-chip__label">Clean claim rate</div><div class="kpi-chip__value">94%</div><div class="kpi-chip__meta">Goal 95%</div></div>
+          </div>
+          <div class="kpi-chip">
+            <span class="kpi-chip__icon"><svg><use href="#i-clock"/></svg></span>
+            <div><div class="kpi-chip__label">Avg days in AR</div><div class="kpi-chip__value">26</div><div class="kpi-chip__meta pos">Beating industry avg of 35</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ MAIN + RAIL ============ -->
+      <div class="bill-cols">
+
+        <!-- LEFT: triage + pipeline -->
+        <div class="grid" style="gap:var(--sp-5)">
+
+          <section class="card">
+            <div class="bill-cardhead">
+              <span class="accent-bar"></span>
+              <h2>Needs attention</h2>
+              <span class="spacer"></span>
+              <span class="badge badge-danger">42 items</span>
+            </div>
+            <div class="triage">
+              <a href="#" class="triage__row is-danger">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-alert"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">Denials</div><div class="triage__desc">Payer denied &middot; needs appeal or correction</div></span>
+                <span class="triage__count">3</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="triage__row is-danger">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-alert"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">Exceptions</div><div class="triage__desc">Held for manual review before submission</div></span>
+                <span class="triage__count">5</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="triage__row is-warn">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-file"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">Rejections</div><div class="triage__desc">Clearinghouse rejected &middot; fix &amp; resubmit</div></span>
+                <span class="triage__count">7</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="triage__row is-warn">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-billing"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">Patient Collections</div><div class="triage__desc">Balances ready for statement or follow-up</div></span>
+                <span class="triage__count">12</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="triage__row is-warn">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-file"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">Delayed Secondary</div><div class="triage__desc">Secondary claims awaiting primary EOB</div></span>
+                <span class="triage__count">4</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="triage__row is-warn">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-alert"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">Post Errors</div><div class="triage__desc">Payments that failed to auto-post</div></span>
+                <span class="triage__count">2</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="triage__row is-info">
+                <span class="triage__sev"></span>
+                <span class="triage__icon"><svg><use href="#i-billing"/></svg></span>
+                <span class="triage__txt"><div class="triage__name">In-Collections</div><div class="triage__desc">Accounts sent to external collections</div></span>
+                <span class="triage__count">9</span>
+                <svg class="triage__go"><use href="#i-chev-right"/></svg>
+              </a>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="bill-cardhead">
+              <span class="accent-bar"></span>
+              <h2>Daily work queues</h2>
+              <small class="muted text-sm" style="margin-left:auto">Claim lifecycle</small>
+            </div>
+            <div class="pipeline">
+              <a href="#" class="pipe-step">
+                <div class="pipe-step__top"><span class="pipe-step__n">1</span><span class="pipe-step__label">Encounter Approval</span></div>
+                <div class="pipe-step__value">24</div>
+                <div class="pipe-step__hint">Awaiting sign-off</div>
+              </a>
+              <span class="pipe-arrow"><svg><use href="#i-chev-right"/></svg></span>
+              <a href="#" class="pipe-step">
+                <div class="pipe-step__top"><span class="pipe-step__n">2</span><span class="pipe-step__label">File Claims</span></div>
+                <div class="pipe-step__value">31</div>
+                <div class="pipe-step__hint">Ready to submit</div>
+              </a>
+              <span class="pipe-arrow"><svg><use href="#i-chev-right"/></svg></span>
+              <a href="#" class="pipe-step">
+                <div class="pipe-step__top"><span class="pipe-step__n">3</span><span class="pipe-step__label">Post / Deposit</span></div>
+                <div class="pipe-step__value">11</div>
+                <div class="pipe-step__hint">Payments to apply</div>
+              </a>
+              <span class="pipe-arrow"><svg><use href="#i-chev-right"/></svg></span>
+              <a href="#" class="pipe-step">
+                <div class="pipe-step__top"><span class="pipe-step__n">4</span><span class="pipe-step__label">Create Deposit</span></div>
+                <div class="pipe-step__value">3</div>
+                <div class="pipe-step__hint">Reconcile &amp; close</div>
+              </a>
+            </div>
+          </section>
+        </div>
+
+        <!-- RIGHT: tools rail -->
+        <div class="grid" style="gap:var(--sp-5)">
+          <section class="card">
+            <div class="bill-cardhead"><span class="accent-bar"></span><h2>Inspectors</h2></div>
+            <div class="card__body rail-group">
+              <a href="#" class="tool-row">
+                <span class="tool-row__icon"><svg><use href="#i-search"/></svg></span>
+                <span class="tool-row__txt"><div class="tool-row__name">Claim Inspector</div><div class="tool-row__desc">Look up and trace any claim</div></span>
+                <svg class="tool-row__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="tool-row">
+                <span class="tool-row__icon"><svg><use href="#i-search"/></svg></span>
+                <span class="tool-row__txt"><div class="tool-row__name">Remittance Inspector</div><div class="tool-row__desc">Review ERA and remittance detail</div></span>
+                <svg class="tool-row__go"><use href="#i-chev-right"/></svg>
+              </a>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="bill-cardhead"><span class="accent-bar"></span><h2>Payments &amp; records</h2></div>
+            <div class="card__body rail-group">
+              <a href="#" class="tool-row">
+                <span class="tool-row__icon is-info"><svg><use href="#i-billing-up"/></svg></span>
+                <span class="tool-row__txt"><div class="tool-row__name">Insurance Payments</div><div class="tool-row__desc">Post insurance payments</div></span>
+                <svg class="tool-row__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="tool-row">
+                <span class="tool-row__icon is-info"><svg><use href="#i-file"/></svg></span>
+                <span class="tool-row__txt"><div class="tool-row__name">Insurance Payments History</div><div class="tool-row__desc">Past posted payments</div></span>
+                <svg class="tool-row__go"><use href="#i-chev-right"/></svg>
+              </a>
+              <a href="#" class="tool-row">
+                <span class="tool-row__icon is-info"><svg><use href="#i-book"/></svg></span>
+                <span class="tool-row__txt"><div class="tool-row__name">Bank Book</div><div class="tool-row__desc">Reconcile deposits</div></span>
+                <svg class="tool-row__go"><use href="#i-chev-right"/></svg>
+              </a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

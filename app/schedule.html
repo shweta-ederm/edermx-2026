@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule - eDermX 2026</title>
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ederm.css">
+<style>
+  /* Schedule-specific */
+  .sched-toolbar { display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-4); }
+  .sched-tabs { display:flex; gap:2px; overflow-x:auto; }
+  .sched-tabs a { padding:8px 12px; font-size:var(--fs-sm); font-weight:600; color:var(--ink-600); border-radius:var(--r-sm); white-space:nowrap; }
+  .sched-tabs a:hover { background:var(--ink-100); color:var(--ink-900); }
+  .sched-tabs a.is-active { background:var(--brand-50); color:var(--brand-700); }
+  .sched-layout { display:grid; grid-template-columns:300px 1fr; gap:var(--sp-4); align-items:start; }
+  .grid-cal { display:grid; grid-template-columns:64px repeat(4,minmax(150px,1fr)); }
+  .grid-cal .gc-head { position:sticky; top:0; background:var(--bg-subtle); z-index:2; padding:10px 8px; text-align:center; font-weight:700; font-size:var(--fs-sm); color:var(--ink-800); border-bottom:1px solid var(--border); border-left:1px solid var(--border); }
+  .grid-cal .gc-head small { display:block; font-weight:500; font-size:var(--fs-xs); color:var(--ink-500); }
+  .grid-cal .gc-corner { position:sticky; top:0; background:var(--bg-subtle); z-index:2; border-bottom:1px solid var(--border); }
+  .grid-cal .gc-time { padding:6px 8px; text-align:right; font-size:var(--fs-xs); color:var(--ink-400); border-bottom:1px solid var(--border); height:60px; }
+  .grid-cal .gc-cell { border-bottom:1px solid var(--ink-100); border-left:1px solid var(--border); height:60px; padding:3px; position:relative; }
+  .grid-cal .gc-cell:hover { background:var(--brand-50); }
+  .appt { border-radius:6px; padding:5px 8px; font-size:var(--fs-xs); line-height:1.3; height:100%; overflow:hidden; border-left:3px solid; cursor:pointer; }
+  .appt b { display:block; font-size:var(--fs-sm); }
+  .appt--in { background:var(--success-50); border-color:var(--success-600); color:var(--success-700); }
+  .appt--wait { background:var(--warning-50); border-color:var(--warning-600); color:var(--warning-700); }
+  .appt--sched { background:var(--brand-50); border-color:var(--brand-600); color:var(--brand-800); }
+  .appt--new { background:var(--accent-soft); border-color:var(--accent); color:var(--info-700); }
+  .lunch { background:repeating-linear-gradient(45deg,var(--ink-100),var(--ink-100) 8px,var(--ink-150) 8px,var(--ink-150) 16px); color:var(--ink-500); border-color:var(--ink-300); font-weight:600; display:flex; align-items:center; justify-content:center; }
+  .cal-scroll { overflow:auto; max-height:calc(100vh - 230px); }
+  .legend { display:flex; gap:var(--sp-3); flex-wrap:wrap; font-size:var(--fs-xs); color:var(--ink-500); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  @media (max-width:1024px){ .sched-layout { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></symbol>
+  <symbol id="i-schedule" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></symbol>
+  <symbol id="i-patients" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M21 20a5 5 0 0 0-4-4.9"/></symbol>
+  <symbol id="i-billing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-6"/></symbol>
+  <symbol id="i-erx" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M14 3v5h5"/><path d="M8.5 12h3a2 2 0 0 1 0 4h-3v-4zm0 4l3.5 3.5"/></symbol>
+  <symbol id="i-results" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v6.5L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 9.5V3"/><path d="M8 3h8M8.5 14h7"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-reports" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 15a1.6 1.6 0 0 0-1.5-1H1a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 3 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 9 5a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 15 5a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 21 9v.1"/></symbol>
+  <symbol id="i-mips" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/></symbol>
+  <symbol id="i-inventory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></symbol>
+  <symbol id="i-switch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h13a4 4 0 0 1 4 4"/><path d="M17 20l4-4-4-4"/><path d="M21 16H8a4 4 0 0 1-4-4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="i-calendar-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></symbol>
+</svg>
+
+<div class="app">
+  <input type="checkbox" id="navToggle">
+  <aside class="sidebar">
+    <div class="sidebar__brand"><img src="assets/logo-ederm.png" alt="eDerm"></div>
+    <div class="sidebar__user">
+      <span class="avatar avatar-lg">SS</span>
+      <span class="sidebar__user-name">Shweta Singh</span>
+      <span class="sidebar__user-role">Super Admin</span>
+      <a class="sidebar__practice">Universal Dermatology <svg style="width:13px;height:13px"><use href="#i-switch"/></svg></a>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="nav-item"><svg><use href="#i-dashboard"/></svg> Dashboard</a>
+      <a href="schedule.html" class="nav-item is-active"><svg><use href="#i-schedule"/></svg> Schedule</a>
+      <a href="patients.html" class="nav-item"><svg><use href="#i-patients"/></svg> Patients</a>
+      <a href="billing.html" class="nav-item"><svg><use href="#i-billing"/></svg> Billing</a>
+      <a href="tasks.html" class="nav-item"><svg><use href="#i-tasks"/></svg> Tasks <span class="badge badge-count badge-danger">5</span></a>
+      <a href="erx.html" class="nav-item"><svg><use href="#i-erx"/></svg> ePrescribing</a>
+      <a href="results.html" class="nav-item"><svg><use href="#i-results"/></svg> Results <span class="badge badge-count badge-danger">2</span></a>
+      <a href="documents.html" class="nav-item"><svg><use href="#i-documents"/></svg> Documents</a>
+      <a href="reports.html" class="nav-item"><svg><use href="#i-reports"/></svg> Reports</a>
+      <a href="settings.html" class="nav-item"><svg><use href="#i-settings"/></svg> Settings</a>
+      <a href="mips.html" class="nav-item"><svg><use href="#i-mips"/></svg> MIPS Dashboard</a>
+      <a href="inventory.html" class="nav-item"><svg><use href="#i-inventory"/></svg> Inventory</a>
+      <div class="nav-section-label">Resources</div>
+      <a href="design-system.html" class="nav-item"><svg><use href="#i-settings"/></svg> Design System</a>
+    </nav>
+  </aside>
+  <label for="navToggle" class="scrim"></label>
+
+  <header class="topbar">
+    <label for="navToggle" class="iconbtn menu-toggle"><svg><use href="#i-menu"/></svg></label>
+    <div class="topbar__search">
+      <div class="search"><svg><use href="#i-search"/></svg><input class="input" placeholder="Search patient by name, MRN, phone, or SSN"></div>
+    </div>
+    <div class="topbar__actions">
+      <span class="topbar__time hide-mobile">12:55 PM</span>
+      <button class="iconbtn"><svg><use href="#i-bell"/></svg><span class="dot"></span></button>
+      <button class="iconbtn"><svg><use href="#i-power"/></svg></button>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="page" style="max-width:none">
+      <!-- Secondary module toolbar, preserved from original (Registration, Insurance, etc.) -->
+      <div class="sched-tabs card mb-4" style="padding:6px">
+        <a class="is-active">Schedule</a>
+        <a>Registration</a>
+        <a>Insurance</a>
+        <a>Reschedule</a>
+        <a>Recall</a>
+        <a>Templates</a>
+        <a>Types</a>
+        <a>Blocks</a>
+      </div>
+
+      <div class="sched-toolbar">
+        <div class="flex items-center gap-2">
+          <button class="iconbtn btn-outline" style="border:1px solid var(--border-strong)"><svg><use href="#i-chev-left"/></svg></button>
+          <button class="iconbtn btn-outline" style="border:1px solid var(--border-strong)"><svg><use href="#i-chev-right"/></svg></button>
+          <button class="btn btn-outline btn-sm">Today</button>
+          <h2 style="font-size:var(--fs-xl);margin-left:6px">Monday, June 8, 2026</h2>
+        </div>
+        <div class="spacer"></div>
+        <div class="tabs"><a class="tab">Day</a><a class="tab is-active">Day x4</a><a class="tab">Week</a></div>
+        <select class="select" style="width:auto"><option>All providers</option></select>
+        <button class="btn btn-primary"><svg><use href="#i-calendar-plus"/></svg> New appointment</button>
+      </div>
+
+      <div class="sched-layout">
+        <!-- Left: scheduled list -->
+        <section class="card">
+          <div class="card__head"><div class="card__title">Scheduled <small>Online &amp; phone bookings</small></div><span class="badge badge-brand">1</span></div>
+          <div class="card__body" style="padding:var(--sp-3)">
+            <div class="card" style="box-shadow:none;border-left:3px solid var(--brand-600)">
+              <div class="card__body" style="padding:var(--sp-3)">
+                <div class="flex justify-between items-center">
+                  <div class="person"><span class="avatar avatar-sm avatar-slate">eT</span><div class="person__meta"><span class="person__name">eDerm Test</span><span class="person__sub">Online Derm Established</span></div></div>
+                  <span class="badge badge-info">3:45 PM</span>
+                </div>
+                <div class="flex gap-2 mt-3">
+                  <button class="btn btn-primary btn-sm btn-block">Confirm</button>
+                  <button class="btn btn-outline btn-sm">Reschedule</button>
+                </div>
+              </div>
+            </div>
+            <div class="empty" style="padding:var(--sp-6) var(--sp-3)">
+              <p class="text-sm muted">No other pending bookings for today.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: provider day grid -->
+        <section class="card" style="overflow:hidden">
+          <div class="card__head">
+            <div class="card__title">Universal Dermatology</div>
+            <div class="legend hide-mobile">
+              <span><i style="background:var(--success-600)"></i> Checked in</span>
+              <span><i style="background:var(--warning-600)"></i> Waiting</span>
+              <span><i style="background:var(--brand-600)"></i> Scheduled</span>
+              <span><i style="background:var(--ink-300)"></i> Block</span>
+            </div>
+          </div>
+          <div class="cal-scroll">
+            <div class="grid-cal">
+              <!-- header row -->
+              <div class="gc-corner"></div>
+              <div class="gc-head">Skin, MD<small>Dermatology</small></div>
+              <div class="gc-head">InSitu, DO<small>Dermatology</small></div>
+              <div class="gc-head">Keratosis, MD<small>Dermatology</small></div>
+              <div class="gc-head">Lentigo, NP<small>Advanced practice</small></div>
+
+              <!-- 8:00 -->
+              <div class="gc-time">8:00</div>
+              <div class="gc-cell"><div class="appt appt--in"><b>Jane Doe</b>Established</div></div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>Carlos Vega</b>Follow-up</div></div>
+              <div class="gc-cell"></div>
+
+              <!-- 9:00 -->
+              <div class="gc-time">9:00</div>
+              <div class="gc-cell"><div class="appt appt--wait"><b>Bryson Test</b>New patient</div></div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>Mia Coale</b>Lesion check</div></div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--new"><b>R. Chonka</b>Acne consult</div></div>
+
+              <!-- 10:00 -->
+              <div class="gc-time">10:00</div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>Ellie Smith</b>Biopsy review</div></div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>Aisha Johnson</b>Follow-up</div></div>
+              <div class="gc-cell"></div>
+
+              <!-- 11:00 -->
+              <div class="gc-time">11:00</div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>Tim Chang</b>Full body exam</div></div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>K. Choedun</b>Wart removal</div></div>
+
+              <!-- 12:00 lunch -->
+              <div class="gc-time">12:00</div>
+              <div class="gc-cell"><div class="appt lunch">Lunch</div></div>
+              <div class="gc-cell"><div class="appt lunch">Lunch</div></div>
+              <div class="gc-cell"><div class="appt lunch">Lunch</div></div>
+              <div class="gc-cell"><div class="appt lunch">Lunch</div></div>
+
+              <!-- 1:00 -->
+              <div class="gc-time">1:00</div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>Darion Chong</b>Mohs</div></div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--new"><b>A. Chilton</b>New patient</div></div>
+              <div class="gc-cell"></div>
+
+              <!-- 2:00 -->
+              <div class="gc-time">2:00</div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"><div class="appt appt--sched"><b>M. Cincotta</b>Follow-up</div></div>
+              <div class="gc-cell"></div>
+              <div class="gc-cell"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

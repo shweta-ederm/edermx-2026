@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eDermX 2026 - Design System</title>
+<link rel="icon" href="assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/ederm.css">
+<style>
+  .ds-shell { max-width: 1080px; margin: 0 auto; padding: var(--sp-8) var(--sp-6) var(--sp-12); }
+  .ds-hero { display:flex; align-items:center; gap: var(--sp-4); margin-bottom: var(--sp-6); }
+  .ds-hero img { height: 34px; }
+  .ds-toc { position: sticky; top: 0; background: var(--bg-app); padding: var(--sp-3) 0; display:flex; gap:6px; flex-wrap:wrap; z-index: 5; border-bottom: 1px solid var(--border); margin-bottom: var(--sp-6); }
+  .ds-toc a { font-size: var(--fs-sm); font-weight:600; padding:6px 12px; border-radius: var(--r-pill); background:#fff; border:1px solid var(--border); color: var(--ink-600); }
+  .ds-toc a:hover { border-color: var(--brand-300); color: var(--brand-700); }
+  .ds-section { margin-bottom: var(--sp-12); scroll-margin-top: 70px; }
+  .ds-section > h2 { font-size: var(--fs-xl); margin-bottom: 4px; }
+  .ds-section > p.lead { color: var(--ink-500); margin-bottom: var(--sp-5); }
+  .ds-block { background:#fff; border:1px solid var(--border); border-radius: var(--r-lg); padding: var(--sp-5); box-shadow: var(--shadow-sm); margin-bottom: var(--sp-4); }
+  .ds-block h3 { font-size: var(--fs-md); margin-bottom: var(--sp-4); color: var(--ink-700); }
+  .swatches { display:grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: var(--sp-3); }
+  .sw { border:1px solid var(--border); border-radius: var(--r-md); overflow:hidden; }
+  .sw__chip { height: 60px; }
+  .sw__meta { padding: 8px 10px; font-size: var(--fs-xs); }
+  .sw__meta b { display:block; color: var(--ink-800); }
+  .sw__meta span { color: var(--ink-500); font-variant-numeric: tabular-nums; }
+  .type-row { display:flex; align-items:baseline; gap: var(--sp-4); padding: 10px 0; border-bottom:1px dashed var(--border); }
+  .type-row:last-child{border-bottom:none;}
+  .type-row .tag { font-size: var(--fs-xs); color: var(--ink-400); width: 120px; flex:none; font-variant-numeric: tabular-nums; }
+  .demo-row { display:flex; flex-wrap:wrap; gap: var(--sp-3); align-items:center; }
+  .icon-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(96px,1fr)); gap: var(--sp-2); }
+  .icon-cell { display:flex; flex-direction:column; align-items:center; gap:6px; padding: var(--sp-3); border:1px solid var(--border); border-radius: var(--r-md); font-size: 10.5px; color: var(--ink-500); text-align:center; }
+  .icon-cell svg { width: 22px; height: 22px; color: var(--brand-700); }
+  .spacing-row { display:flex; align-items:center; gap: var(--sp-4); margin-bottom:8px; font-size: var(--fs-sm); }
+  .spacing-bar { height: 16px; background: var(--brand-300); border-radius: 3px; }
+  code.tok { background: var(--ink-100); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--brand-800); font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+
+<!-- ============ ICON SPRITE (shared across all pages) ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="i-base" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></g>
+  </defs>
+  <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></symbol>
+  <symbol id="i-schedule" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></symbol>
+  <symbol id="i-patients" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.2a3 3 0 0 1 0 5.6M21 20a5 5 0 0 0-4-4.9"/></symbol>
+  <symbol id="i-billing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></symbol>
+  <symbol id="i-tasks" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-6"/></symbol>
+  <symbol id="i-erx" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4a1 1 0 0 1 1-1h8l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M14 3v5h5"/><path d="M8.5 12h3a2 2 0 0 1 0 4h-3v-4zm0 4l3.5 3.5"/></symbol>
+  <symbol id="i-results" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v6.5L4.5 17a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 9.5V3"/><path d="M8 3h8M8.5 14h7"/></symbol>
+  <symbol id="i-documents" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-reports" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 15a1.6 1.6 0 0 0-1.5-1H1a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 3 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 9 5a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 15 5a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 21 9v.1"/></symbol>
+  <symbol id="i-mips" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/></symbol>
+  <symbol id="i-inventory" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></symbol>
+  <symbol id="i-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></symbol>
+  <symbol id="i-switch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h13a4 4 0 0 1 4 4"/><path d="M17 20l4-4-4-4"/><path d="M21 16H8a4 4 0 0 1-4-4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></symbol>
+  <symbol id="i-chev-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 9l5-5 5 5M12 4v12"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 11l5 5 5-5M12 16V4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h8l6 6v14H6z"/><path d="M14 2v6h6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 9v5M12 17.5v.5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="i-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-calendar-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 13v4M10 15h4"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="8" rx="4" transform="rotate(45 12 12)"/><path d="M8.5 8.5l7 7"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-fax" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8V3h10v5"/><rect x="3" y="8" width="18" height="9" rx="2"/><path d="M7 21h10v-6H7z"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 17h10v4H7z"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 9.5V21h14V9.5"/></symbol>
+</svg>
+
+<div class="ds-shell">
+  <div class="ds-hero">
+    <img src="assets/logo-ederm.png" alt="eDerm">
+    <div>
+      <h1 style="font-size:var(--fs-2xl)">eDermX 2026 Design System</h1>
+      <p class="muted">Foundations and components for a calmer, faster, more trustworthy dermatology workspace.</p>
+    </div>
+  </div>
+
+  <nav class="ds-toc">
+    <a href="dashboard.html">&larr; Back to app</a>
+    <a href="#color">Color</a>
+    <a href="#type">Typography</a>
+    <a href="#spacing">Spacing</a>
+    <a href="#icons">Icons</a>
+    <a href="#buttons">Buttons</a>
+    <a href="#forms">Forms</a>
+    <a href="#badges">Badges &amp; Status</a>
+    <a href="#tiles">Tiles &amp; Stats</a>
+    <a href="#tables">Tables</a>
+    <a href="#nav">Navigation</a>
+    <a href="#feedback">Feedback</a>
+  </nav>
+
+  <!-- COLOR -->
+  <section class="ds-section" id="color">
+    <h2>Color</h2>
+    <p class="lead">The eDerm brand blues are locked. Everything else is a calm, accessible neutral and semantic palette built around them.</p>
+    <div class="ds-block">
+      <h3>Brand (locked)</h3>
+      <div class="swatches">
+        <div class="sw"><div class="sw__chip" style="background:var(--brand-900)"></div><div class="sw__meta"><b>brand-900</b><span>#053a5e</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--brand-700)"></div><div class="sw__meta"><b>brand-700 *</b><span>#0b5a8e</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--brand-500)"></div><div class="sw__meta"><b>brand-500</b><span>#1a82c4</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--accent)"></div><div class="sw__meta"><b>accent</b><span>#00aaf7</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--brand-100)"></div><div class="sw__meta"><b>brand-100</b><span>#e3f1fb</span></div></div>
+      </div>
+      <p class="hint mt-3">* Primary action color. The deep wordmark blue and the light "SYSTEMS" blue come straight from the logo.</p>
+    </div>
+    <div class="ds-block">
+      <h3>Neutrals</h3>
+      <div class="swatches">
+        <div class="sw"><div class="sw__chip" style="background:var(--ink-900)"></div><div class="sw__meta"><b>ink-900</b><span>#0f172a</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--ink-700)"></div><div class="sw__meta"><b>ink-700</b><span>#334155</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--ink-500)"></div><div class="sw__meta"><b>ink-500</b><span>#64748b</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--ink-300)"></div><div class="sw__meta"><b>ink-300</b><span>#cbd5e1</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--ink-100)"></div><div class="sw__meta"><b>ink-100</b><span>#f1f5f9</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--bg-app);border:1px solid var(--border)"></div><div class="sw__meta"><b>bg-app</b><span>#f4f6fa</span></div></div>
+      </div>
+    </div>
+    <div class="ds-block">
+      <h3>Semantic</h3>
+      <div class="swatches">
+        <div class="sw"><div class="sw__chip" style="background:var(--success-600)"></div><div class="sw__meta"><b>success</b><span>#16a34a</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--warning-600)"></div><div class="sw__meta"><b>warning</b><span>#d97706</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--danger-600)"></div><div class="sw__meta"><b>danger</b><span>#dc2626</span></div></div>
+        <div class="sw"><div class="sw__chip" style="background:var(--info-600)"></div><div class="sw__meta"><b>info</b><span>#0284c7</span></div></div>
+      </div>
+      <p class="hint mt-3">Semantic colors carry meaning only (success, caution, risk, info). They are never used decoratively, so a red row always means "needs attention".</p>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section class="ds-section" id="type">
+    <h2>Typography</h2>
+    <p class="lead">Inter, with a system fallback. Tight headings, comfortable body, tabular numerals for clinical and financial data.</p>
+    <div class="ds-block">
+      <div class="type-row"><span class="tag">3xl / 800</span><span style="font-size:var(--fs-3xl);font-weight:800">Visits This Month</span></div>
+      <div class="type-row"><span class="tag">2xl / 700</span><h2 style="font-size:var(--fs-2xl)">Page title</h2></div>
+      <div class="type-row"><span class="tag">lg / 700</span><h3 style="font-size:var(--fs-lg)">Card title</h3></div>
+      <div class="type-row"><span class="tag">base / 400</span><span>Body text used across tables, forms, and content.</span></div>
+      <div class="type-row"><span class="tag">sm / 500</span><span style="font-size:var(--fs-sm)">Secondary and supporting text.</span></div>
+      <div class="type-row"><span class="tag">xs / 700 caps</span><span style="font-size:var(--fs-xs);font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-500)">Table header label</span></div>
+    </div>
+  </section>
+
+  <!-- SPACING -->
+  <section class="ds-section" id="spacing">
+    <h2>Spacing &amp; Radius</h2>
+    <p class="lead">A 4px base scale keeps rhythm consistent. Generous padding gives clinical data room to breathe.</p>
+    <div class="ds-block">
+      <div class="spacing-row"><span class="tag" style="width:90px">sp-1 / 4</span><div class="spacing-bar" style="width:4px"></div></div>
+      <div class="spacing-row"><span class="tag" style="width:90px">sp-2 / 8</span><div class="spacing-bar" style="width:8px"></div></div>
+      <div class="spacing-row"><span class="tag" style="width:90px">sp-3 / 12</span><div class="spacing-bar" style="width:12px"></div></div>
+      <div class="spacing-row"><span class="tag" style="width:90px">sp-4 / 16</span><div class="spacing-bar" style="width:16px"></div></div>
+      <div class="spacing-row"><span class="tag" style="width:90px">sp-6 / 24</span><div class="spacing-bar" style="width:24px"></div></div>
+      <div class="spacing-row"><span class="tag" style="width:90px">sp-8 / 32</span><div class="spacing-bar" style="width:32px"></div></div>
+      <hr class="divider">
+      <div class="demo-row">
+        <div style="width:80px;height:48px;background:var(--brand-100);border-radius:var(--r-sm)">　</div>
+        <div style="width:80px;height:48px;background:var(--brand-100);border-radius:var(--r-md)">　</div>
+        <div style="width:80px;height:48px;background:var(--brand-100);border-radius:var(--r-lg)">　</div>
+        <div style="width:80px;height:48px;background:var(--brand-100);border-radius:var(--r-pill)">　</div>
+        <span class="hint">r-sm 6 &middot; r-md 10 &middot; r-lg 14 &middot; pill</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ICONS -->
+  <section class="ds-section" id="icons">
+    <h2>Icons</h2>
+    <p class="lead">One consistent stroke-based set, referenced from a shared sprite so every page stays in sync.</p>
+    <div class="ds-block">
+      <div class="icon-grid">
+        <div class="icon-cell"><svg><use href="#i-dashboard"/></svg>dashboard</div>
+        <div class="icon-cell"><svg><use href="#i-schedule"/></svg>schedule</div>
+        <div class="icon-cell"><svg><use href="#i-patients"/></svg>patients</div>
+        <div class="icon-cell"><svg><use href="#i-billing"/></svg>billing</div>
+        <div class="icon-cell"><svg><use href="#i-tasks"/></svg>tasks</div>
+        <div class="icon-cell"><svg><use href="#i-erx"/></svg>erx</div>
+        <div class="icon-cell"><svg><use href="#i-results"/></svg>results</div>
+        <div class="icon-cell"><svg><use href="#i-documents"/></svg>documents</div>
+        <div class="icon-cell"><svg><use href="#i-reports"/></svg>reports</div>
+        <div class="icon-cell"><svg><use href="#i-settings"/></svg>settings</div>
+        <div class="icon-cell"><svg><use href="#i-mips"/></svg>mips</div>
+        <div class="icon-cell"><svg><use href="#i-inventory"/></svg>inventory</div>
+        <div class="icon-cell"><svg><use href="#i-search"/></svg>search</div>
+        <div class="icon-cell"><svg><use href="#i-bell"/></svg>bell</div>
+        <div class="icon-cell"><svg><use href="#i-filter"/></svg>filter</div>
+        <div class="icon-cell"><svg><use href="#i-edit"/></svg>edit</div>
+        <div class="icon-cell"><svg><use href="#i-upload"/></svg>upload</div>
+        <div class="icon-cell"><svg><use href="#i-clock"/></svg>clock</div>
+        <div class="icon-cell"><svg><use href="#i-phone"/></svg>phone</div>
+        <div class="icon-cell"><svg><use href="#i-alert"/></svg>alert</div>
+        <div class="icon-cell"><svg><use href="#i-switch"/></svg>switch</div>
+        <div class="icon-cell"><svg><use href="#i-power"/></svg>power</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section class="ds-section" id="buttons">
+    <h2>Buttons</h2>
+    <p class="lead">One primary action per view. Everything else recedes so the eye lands on the next step.</p>
+    <div class="ds-block">
+      <h3>Variants</h3>
+      <div class="demo-row">
+        <button class="btn btn-primary"><svg><use href="#i-plus"/></svg>Primary</button>
+        <button class="btn btn-accent">Accent</button>
+        <button class="btn btn-outline">Outline</button>
+        <button class="btn">Subtle</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn btn-success"><svg><use href="#i-check"/></svg>Success</button>
+        <button class="btn btn-danger">Danger</button>
+      </div>
+      <h3 class="mt-5">Sizes &amp; icon</h3>
+      <div class="demo-row">
+        <button class="btn btn-primary btn-lg">Large</button>
+        <button class="btn btn-primary">Default</button>
+        <button class="btn btn-primary btn-sm">Small</button>
+        <button class="btn btn-outline btn-icon"><svg><use href="#i-edit"/></svg></button>
+        <button class="iconbtn"><svg><use href="#i-bell"/></svg><span class="dot"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMS -->
+  <section class="ds-section" id="forms">
+    <h2>Forms</h2>
+    <p class="lead">Clear labels above fields, visible focus rings, and generous targets for fast, accurate entry.</p>
+    <div class="ds-block">
+      <div class="grid grid-2">
+        <div class="field"><label class="label">Patient name <span class="req">*</span></label><input class="input" placeholder="Last, First"></div>
+        <div class="field"><label class="label">Provider</label><select class="select"><option>John Skin, MD</option><option>Suzy Keratosis, MD</option></select></div>
+        <div class="field"><label class="label">Search</label><div class="search"><svg><use href="#i-search"/></svg><input class="input" placeholder="Name, MRN, phone, SSN"></div></div>
+        <div class="field"><label class="label">Date of birth</label><input class="input" type="date"></div>
+        <div class="field" style="grid-column:1 / -1"><label class="label">Notes</label><textarea class="textarea" placeholder="Add a note"></textarea></div>
+      </div>
+      <hr class="divider">
+      <div class="demo-row">
+        <label class="check"><input type="checkbox" checked> Show urgent only</label>
+        <label class="switch"><input type="checkbox" checked><span class="track"></span></label>
+        <span class="chip is-active">Available <span class="badge badge-count">12</span></span>
+        <span class="chip">Low stock <span class="badge badge-count">0</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BADGES -->
+  <section class="ds-section" id="badges">
+    <h2>Badges &amp; Status</h2>
+    <p class="lead">Consistent status language across queues, results, and tasks so meaning never has to be relearned.</p>
+    <div class="ds-block">
+      <div class="demo-row">
+        <span class="badge badge-brand">Brand</span>
+        <span class="badge badge-success">Resulted</span>
+        <span class="badge badge-warning">Pending</span>
+        <span class="badge badge-danger">Untreated cancer</span>
+        <span class="badge badge-info">Scheduled</span>
+        <span class="badge badge-neutral">Draft</span>
+        <span class="badge badge-accent">New</span>
+      </div>
+      <div class="demo-row mt-4">
+        <span class="flex items-center gap-2"><span class="dot-status dot-success"></span> Available</span>
+        <span class="flex items-center gap-2"><span class="dot-status dot-warning"></span> Low stock</span>
+        <span class="flex items-center gap-2"><span class="dot-status dot-danger"></span> Out of stock</span>
+        <span class="flex items-center gap-2"><span class="dot-status dot-neutral"></span> Inactive</span>
+      </div>
+      <div class="demo-row mt-4">
+        <span class="avatar">SS</span>
+        <span class="avatar avatar-amber">JD</span>
+        <span class="avatar avatar-green">BT</span>
+        <span class="avatar avatar-sm avatar-slate">AR</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- TILES -->
+  <section class="ds-section" id="tiles">
+    <h2>Tiles &amp; Stats</h2>
+    <p class="lead">KPIs and queue counters. Color carries urgency, with a left accent and matching icon for quick scanning.</p>
+    <div class="ds-block">
+      <div class="grid grid-4">
+        <div class="stat"><div class="stat__icon"><svg><use href="#i-patients"/></svg></div><div class="stat__label">Visits Today</div><div class="stat__value">18</div><div class="stat__meta trend-up"><svg style="width:14px;height:14px"><use href="#i-arrow-up"/></svg> 12% vs last week</div></div>
+        <div class="tile tile--info"><div class="tile__top"><span class="tile__label">Encounter Approval</span><span class="tile__icon"><svg><use href="#i-check"/></svg></span></div><span class="tile__value">24</span></div>
+        <div class="tile tile--warn"><div class="tile__top"><span class="tile__label">Rejections</span><span class="tile__icon"><svg><use href="#i-alert"/></svg></span></div><span class="tile__value">7</span></div>
+        <div class="tile tile--alert"><div class="tile__top"><span class="tile__label">Denials</span><span class="tile__icon"><svg><use href="#i-alert"/></svg></span></div><span class="tile__value">3</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLES -->
+  <section class="ds-section" id="tables">
+    <h2>Tables</h2>
+    <p class="lead">The workhorse of an EHR. Uppercase headers, zebra-free rows with hover, sticky header, and a clear danger state for clinical risk.</p>
+    <div class="ds-block" style="padding:0;overflow:hidden">
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Patient</th><th>MRN</th><th>DOB</th><th>Provider</th><th>Status</th><th class="text-right">Action</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="person"><span class="avatar avatar-sm avatar-amber">JD</span><div class="person__meta"><span class="person__name">Jane Doe</span><span class="person__sub">Female &middot; 36 yrs</span></div></div></td>
+              <td class="tabular">9657962</td><td class="tabular">10/14/1989</td><td>John Skin, MD</td>
+              <td><span class="badge badge-info">Scheduled</span></td>
+              <td class="cell-actions"><button class="iconbtn"><svg><use href="#i-edit"/></svg></button></td>
+            </tr>
+            <tr class="table-row-danger">
+              <td><div class="person"><span class="avatar avatar-sm avatar-slate">AJ</span><div class="person__meta"><span class="person__name">Aisha Johnson</span><span class="person__sub">Female &middot; 30 yrs</span></div></div></td>
+              <td class="tabular">15990239</td><td class="tabular">12/05/1995</td><td>Suzy Keratosis, MD</td>
+              <td><span class="badge badge-danger">Untreated cancer</span></td>
+              <td class="cell-actions"><button class="iconbtn"><svg><use href="#i-edit"/></svg></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card__foot">
+        <span class="muted text-sm">Showing 1 to 2 of 2</span>
+        <div class="pagination"><a><svg style="width:16px;height:16px"><use href="#i-chev-left"/></svg></a><a class="is-active">1</a><a>2</a><a>3</a><a><svg style="width:16px;height:16px"><use href="#i-chev-right"/></svg></a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAV -->
+  <section class="ds-section" id="nav">
+    <h2>Navigation</h2>
+    <p class="lead">Underline tabs and the sidebar item. One tab style is used everywhere for a consistent, unmistakable active state.</p>
+    <div class="ds-block">
+      <div class="tabs mb-4">
+        <a class="tab is-active">Pathology Results</a>
+        <a class="tab">Microbiology Results</a>
+        <a class="tab">Miscellaneous <span class="badge badge-count badge-neutral">3</span></a>
+        <a class="tab">eFax</a>
+      </div>
+      <div style="max-width:240px;background:#fff;border:1px solid var(--border);border-radius:var(--r-md);padding:8px">
+        <a class="nav-item is-active"><svg><use href="#i-dashboard"/></svg> Dashboard</a>
+        <a class="nav-item"><svg><use href="#i-schedule"/></svg> Schedule</a>
+        <a class="nav-item"><svg><use href="#i-tasks"/></svg> Tasks <span class="badge badge-count badge-danger">5</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section class="ds-section" id="feedback">
+    <h2>Feedback</h2>
+    <p class="lead">Alerts, empty states, and progress communicate system status without alarming the user.</p>
+    <div class="ds-block">
+      <div class="grid" style="gap:var(--sp-3)">
+        <div class="alert alert-danger"><svg><use href="#i-alert"/></svg><div><b>2 results flagged untreated cancer.</b> Review and assign follow-up today.</div></div>
+        <div class="alert alert-warning"><svg><use href="#i-clock"/></svg><div>5 tasks are overdue.</div></div>
+        <div class="alert alert-info"><svg><use href="#i-info"/></svg><div>Cost is calculated by CMS and cannot be estimated before submission.</div></div>
+        <div class="alert alert-success"><svg><use href="#i-check"/></svg><div>Deposit posted successfully.</div></div>
+      </div>
+      <hr class="divider">
+      <div class="grid grid-2">
+        <div>
+          <p class="text-sm mb-2"><b>MIPS Quality</b> 82 / 100</p>
+          <div class="progress"><div class="progress__bar is-success" style="width:82%"></div></div>
+          <p class="text-sm mb-2 mt-4"><b>Stock level</b> low</p>
+          <div class="progress"><div class="progress__bar is-warn" style="width:22%"></div></div>
+        </div>
+        <div class="empty" style="padding:var(--sp-6)">
+          <div class="empty__icon"><svg><use href="#i-erx"/></svg></div>
+          <h3>No Rx found</h3>
+          <p class="text-sm">Prescriptions you send will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="muted text-center text-sm mt-6">eDermX 2026 &middot; Design system grows as new screens arrive.</p>
+</div>
+</body>
+</html>
