@@ -10,11 +10,16 @@
 <link rel="stylesheet" href="css/ederm.css">
 <style>
   /* Schedule-specific */
-  .sched-toolbar { display:flex; align-items:center; gap:var(--sp-3); flex-wrap:wrap; margin-bottom:var(--sp-4); }
-  .sched-tabs { display:flex; gap:2px; overflow-x:auto; }
-  .sched-tabs a { padding:8px 12px; font-size:var(--fs-sm); font-weight:600; color:var(--ink-600); border-radius:var(--r-sm); white-space:nowrap; }
-  .sched-tabs a:hover { background:var(--ink-100); color:var(--ink-900); }
-  .sched-tabs a.is-active { background:var(--brand-50); color:var(--brand-700); }
+  .sched-toolbar { display:flex; align-items:center; gap:var(--sp-2); flex-wrap:wrap; margin-bottom:var(--sp-4); }
+  .sched-date { font-size:var(--fs-lg); font-weight:700; color:var(--ink-900); margin-left:6px; white-space:nowrap; }
+  /* compact grouped prev/next */
+  .sched-nav { display:inline-flex; border:1px solid var(--border-strong); border-radius:var(--r-sm); overflow:hidden; }
+  .sched-nav .iconbtn { width:32px; height:32px; border-radius:0; }
+  .sched-nav .iconbtn + .iconbtn { border-left:1px solid var(--border); }
+  .sched-nav .iconbtn svg { width:16px; height:16px; }
+  /* inline view switch — underline tabs, sized down for the toolbar */
+  .sched-views { border-bottom:none; }
+  .sched-views .tab { padding:7px 12px; font-size:var(--fs-sm); }
   .sched-layout { display:grid; grid-template-columns:300px 1fr; gap:var(--sp-4); align-items:start; }
   .grid-cal { display:grid; grid-template-columns:64px repeat(4,minmax(150px,1fr)); }
   .grid-cal .gc-head { position:sticky; top:0; background:var(--bg-subtle); z-index:2; padding:10px 8px; text-align:center; font-weight:700; font-size:var(--fs-sm); color:var(--ink-800); border-bottom:1px solid var(--border); border-left:1px solid var(--border); }
@@ -106,29 +111,29 @@
 
   <main class="content">
     <div class="page" style="max-width:none">
-      <!-- Secondary module toolbar, preserved from original (Registration, Insurance, etc.) -->
-      <div class="sched-tabs card mb-4" style="padding:6px">
-        <a class="is-active">Schedule</a>
-        <a>Registration</a>
-        <a>Insurance</a>
-        <a>Reschedule</a>
-        <a>Recall</a>
-        <a>Templates</a>
-        <a>Types</a>
-        <a>Blocks</a>
+      <!-- Module sub-navigation -->
+      <div class="tabs mb-4">
+        <a class="tab is-active">Schedule</a>
+        <a class="tab">Registration</a>
+        <a class="tab">Insurance</a>
+        <a class="tab">Reschedule</a>
+        <a class="tab">Recall</a>
+        <a class="tab">Templates</a>
+        <a class="tab">Types</a>
+        <a class="tab">Blocks</a>
       </div>
 
       <div class="sched-toolbar">
-        <div class="flex items-center gap-2">
-          <button class="iconbtn btn-outline" style="border:1px solid var(--border-strong)"><svg><use href="#i-chev-left"/></svg></button>
-          <button class="iconbtn btn-outline" style="border:1px solid var(--border-strong)"><svg><use href="#i-chev-right"/></svg></button>
-          <button class="btn btn-outline btn-sm">Today</button>
-          <h2 style="font-size:var(--fs-xl);margin-left:6px">Monday, June 8, 2026</h2>
+        <div class="sched-nav">
+          <button class="iconbtn"><svg><use href="#i-chev-left"/></svg></button>
+          <button class="iconbtn"><svg><use href="#i-chev-right"/></svg></button>
         </div>
+        <button class="btn btn-ghost btn-sm">Today</button>
+        <h2 class="sched-date">Monday, June 8, 2026</h2>
         <div class="spacer"></div>
-        <div class="tabs"><a class="tab">Day</a><a class="tab is-active">Day x4</a><a class="tab">Week</a></div>
-        <select class="select" style="width:auto"><option>All providers</option></select>
-        <button class="btn btn-primary"><svg><use href="#i-calendar-plus"/></svg> New appointment</button>
+        <div class="tabs sched-views"><a class="tab">Day</a><a class="tab is-active">Day&nbsp;&times;4</a><a class="tab">Week</a></div>
+        <select class="select" style="width:auto;height:32px;font-size:var(--fs-sm)"><option>All providers</option></select>
+        <button class="btn btn-primary btn-sm"><svg><use href="#i-plus"/></svg> New</button>
       </div>
 
       <div class="sched-layout">
@@ -143,8 +148,8 @@
                   <span class="badge badge-info">3:45 PM</span>
                 </div>
                 <div class="flex gap-2 mt-3">
-                  <button class="btn btn-primary btn-sm btn-block">Confirm</button>
-                  <button class="btn btn-outline btn-sm">Reschedule</button>
+                  <button class="btn btn-primary btn-sm">Confirm</button>
+                  <button class="btn btn-ghost btn-sm">Reschedule</button>
                 </div>
               </div>
             </div>
