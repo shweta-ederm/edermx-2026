@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -53,7 +53,28 @@
   <aside class="sidebar">
     <div class="sidebar__brand"><img src="../assets/logo-ederm.png" alt="eDerm"><span class="portal-tag">Portal</span></div>
     <div class="sidebar__user">
-      <svg class="avatar avatar-lg avatar-img" viewBox="0 0 128 128" role="img" aria-label="Shweta Singh"><defs><clipPath id="av-c"><circle cx="64" cy="64" r="64"/></clipPath><linearGradient id="av-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c2e1f5"/><stop offset="1" stop-color="#8ec7ea"/></linearGradient></defs><g clip-path="url(#av-c)"><rect width="128" height="128" fill="url(#av-bg)"/><path d="M64 22c-20 0-30 14-30 32 0 10 2 20 2 30l-6 44h68l-6-44c0-10 2-20 2-30 0-18-10-32-30-32z" fill="#2f2a33"/><rect x="55" y="70" width="18" height="20" rx="8" fill="#e3a983"/><ellipse cx="64" cy="56" rx="19" ry="22" fill="#f0bd94"/><path d="M64 28c-14 0-22 10-22 24 0 3 .4 6 1 8 1-8 5-12 9-13 3-1 8-2 12-2s9 1 12 2c4 1 8 5 9 13 .6-2 1-5 1-8 0-14-8-24-22-24z" fill="#3a333f"/><path d="M24 128c2-24 18-34 40-34s38 10 40 34z" fill="#0f6aa6"/><path d="M56 96l8 10 8-10c-2.5-1.4-5.2-2-8-2s-5.5.6-8 2z" fill="#e3f1fb"/></g></svg>
+      <div class="photo-edit" data-photo-key="patient-shweta-singh" data-initials="SS">
+        <input type="checkbox" id="photoEditToggle" class="photo-edit__toggle">
+        <label for="photoEditToggle" class="photo-edit__trigger" tabindex="0" aria-label="Change profile photo">
+          <span class="avatar avatar-lg">SS</span>
+          <span class="photo-edit__badge"><svg><use href="#i-camera"/></svg></span>
+        </label>
+        <label for="photoEditToggle" class="photo-edit__scrim"></label>
+        <div class="photo-edit__menu">
+          <button type="button" class="photo-edit__item" data-action="view" hidden><svg><use href="#i-eye"/></svg> View photo</button>
+          <button type="button" class="photo-edit__item" data-action="upload"><svg><use href="#i-upload"/></svg> Upload photo</button>
+          <button type="button" class="photo-edit__item photo-edit__item--danger" data-action="remove" hidden><svg><use href="#i-trash"/></svg> Remove photo</button>
+          <input type="file" accept="image/*" class="photo-edit__input">
+        </div>
+        <input type="checkbox" id="photoPreviewToggle" class="photo-preview-toggle">
+        <div class="photo-preview">
+          <label for="photoPreviewToggle" class="photo-preview__scrim"></label>
+          <div class="photo-preview__card">
+            <img class="photo-preview__img" alt="Profile photo">
+            <label for="photoPreviewToggle" class="photo-preview__close"><svg><use href="#i-x"/></svg></label>
+          </div>
+        </div>
+      </div>
       <span class="sidebar__user-name">Shweta Singh</span>
       <span class="sidebar__user-role">Patient &middot; MRN 9496928</span>
       <a class="sidebar__practice">Dermatology of Springfield <svg style="width:13px;height:13px"><use href="#i-switch"/></svg></a>
@@ -144,5 +165,6 @@
     </div>
   </main>
 </div>
+<script src="../js/photo-edit.js"></script>
 </body>
 </html>
